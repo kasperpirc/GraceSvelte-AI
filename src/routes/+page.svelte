@@ -4,31 +4,40 @@
 	let loading = false;
 
 	let type: 'joke' | 'image' = 'joke';
+	let history = [
+		['human', 'Hello!'],
+		['assistant', 'How are you?']
+	];
 
 	async function handleSubmit() {
 		loading = true;
-		const result = await fetch('/api/' + type, {
+
+		history = [...history, ['human', input]];
+		input = '';
+
+		const result = await fetch('/api/chat', {
 			method: 'POST',
-			body: input
+			body: JSON.stringify({ history })
 		});
 		const data = await result.json();
 
 		loading = false;
-		input = '';
-		response = data.message;
+		history = [...history, ['assistant', data.message]];
 	}
 </script>
 
 <main class="flex flex-col items-center justify-center h-screen">
-	<div class="w-full p-4 text-center">
-		{response}
-	</div>
+	{#each history as [role, message]}
+		<div
+			class="w-full p-4 text-center"
+			class:bg-blue-100={role === 'human'}
+			class:bg-green-100={role === 'assistant'}
+		>
+			{message}
+		</div>
+	{/each}
 
 	<form on:submit={handleSubmit} class="flex gap-2 max-w-md mx-auto mt-4">
-		<select bind:value={type}>
-			<option value="joke">Joke</option>
-			<option value="image">Image</option>
-		</select>
 		<input
 			bind:value={input}
 			class="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-96"
