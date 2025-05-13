@@ -11,10 +11,9 @@ datasource db {
 }
 
 // Primer:
-model Clovek {
+model Image {
   // vsaka vrstica potrebuje unikatni oznacevalec oz. identifikator (id)
   id Int @id @default(autoincrement())
-  ime String
-  priimek String
-  starost Int
+  base64 String
+  prompt String
 }
