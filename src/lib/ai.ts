@@ -11,31 +11,3 @@ const model = new ChatOpenAI({
 	apiKey: OPENAI_API_KEY
 });
 const parser = new StringOutputParser();
-
-// -------------- Joke --------------
-
-const joke_prompt = ChatPromptTemplate.fromTemplate(
-	'tell me a joke about {topic}. Respond only with the joke.'
-);
-export const joke_message = joke_prompt.pipe(model).pipe(parser);
-
-// -------------- Image --------------
-
-const image_prompt = ChatPromptTemplate.fromMessages([
-	new HumanMessage({
-		content: [
-			{
-				type: 'text',
-				text: 'what does this image contain?'
-			},
-			{
-				type: 'image_url',
-				// Use input variable "image_url"
-				image_url: { url: '{image_url}' }
-			}
-		]
-	})
-]);
-
-// Create the chain for image analysis
-export const image_message = image_prompt.pipe(model).pipe(parser);
