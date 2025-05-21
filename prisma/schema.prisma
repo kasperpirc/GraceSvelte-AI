@@ -10,6 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Image {
-  
+enum UserType {
+  assistant
+  human
+}
+
+model Chat {
+  id Int @id @default(autoincrement())
+  title String
+
+  messages Message[]
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  content String
+
+  userType UserType
+
+  chatId Int
+  chat Chat @relation(fields: [chatId], references: [id])
 }
