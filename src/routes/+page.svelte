@@ -17,7 +17,7 @@
 
 	<!-- Messages -->
 	<div class="flex-1 lex flex-col">
-		<div class="flex justify-start bg-gray-200 border-b">
+		<div class="flex justify-start bg-gray-300 border-b">
 			<button on:click={() => (sidebarOpen = !sidebarOpen)} class="p-2">x</button>
 		</div>
 		<div class="flex-1 overflow-y-auto space-y-4">
