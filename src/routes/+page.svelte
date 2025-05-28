@@ -18,7 +18,7 @@
 	<!-- Messages -->
 	<div class="flex-1 lex flex-col">
 		<div class="flex justify-start bg-gray-300 border-b">
-			<button on:click={() => (sidebarOpen = !sidebarOpen)} class="p-2">x</button>
+			<button on:click={() => (sidebarOpen = !sidebarOpen)} class="p-3">x</button>
 		</div>
 		<div class="flex-1 overflow-y-auto space-y-4">
 			{#each currentChat.messages as m}
