@@ -1,60 +1,21 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { enhance } from '$app/forms';
+	import type { Message } from '@prisma/client';
 
-	export let data: {
-		chats: {
-			id: string;
-			title: string;
-			createdAt: Date;
-			messages: {
-				content: string;
-				role: string;
-				createdAt: Date;
-			}[];
-		}[];
-	};
+	export let data;
 
-	let messages: { content: string; role: string; createdAt: Date }[] = [];
+	let messages = [];
 	let newMessage = '';
 	let isLoading = false;
-	let currentChatId: string | null = null;
+	let currentChatId: number | null = null;
 	let isSidebarOpen = true;
 	let chats = data.chats;
 
-	// Remove automatic chat selection
-	$: if (data.chats && data.chats.length > 0 && !currentChatId) {
+	function openNewChat() {
+		currentChatId = null;
 		messages = [];
 	}
 
-	async function createNewChat() {
-		try {
-			const response = await fetch('/api/chat', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					chatId: null
-				})
-			});
-
-			const data = await response.json();
-			// Add the new chat to the list
-			const newChat = {
-				id: data.chatId,
-				title: 'New Chat',
-				createdAt: new Date(),
-				messages: []
-			};
-			chats = [newChat, ...chats];
-			// Switch to the new chat
-			currentChatId = data.chatId;
-			messages = [];
-		} catch (error) {
-			console.error('Error creating new chat:', error);
-		}
-	}
-
-	function switchChat(chatId: string) {
+	function switchChat(chatId: number) {
 		const chat = chats.find((c) => c.id === chatId);
 		if (chat) {
 			currentChatId = chat.id;
@@ -90,16 +51,24 @@
 				}
 			];
 
-			// Update the chat in the list
-			chats = chats.map((chat) => {
-				if (chat.id === currentChatId) {
-					return {
-						...chat,
-						messages: messages
-					};
-				}
-				return chat;
-			});
+			if (data.chatId !== currentChatId) {
+				chats = [
+					{ id: data.chatId, title: 'New Chat', createdAt: new Date(), messages: messages },
+					...chats
+				];
+				currentChatId = data.chatId;
+			} else {
+				// Update the chat in the list
+				chats = chats.map((chat) => {
+					if (chat.id === currentChatId) {
+						return {
+							...chat,
+							messages: messages
+						};
+					}
+					return chat;
+				});
+			}
 		} catch (error) {
 			console.error('Error:', error);
 		} finally {
@@ -125,7 +94,7 @@
 			<div class="flex items-center justify-between mb-4">
 				<h2 class="text-lg font-semibold">Chats</h2>
 				<button
-					on:click={createNewChat}
+					on:click={openNewChat}
 					class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"
 					title="New Chat"
 				>
